@@ -1,4 +1,4 @@
-Name: []
+Name: Akram Sbaih & Eric Zhou
 
 ## Question 1
 
@@ -12,6 +12,9 @@ signals.
 ```
 
 ## Answer 1
+It is not the product of signals because `(2 ** i)` is not a signal even though `bits[i]` is defined as a signal. 
+Instead, `(2 ** i)` is a constant since `i` is looping over a known `n` at compile-time.
+The sum of products of constants and signals is a linear combination of those signals, as desired.
 
 
 ## Question 2
@@ -19,6 +22,10 @@ signals.
 Explain, in your own words, the meaning of the `<==` operator.
 
 ## Answer 2
+It combines the assignment `<--` and the constraint `===` operations.
+For example, constraint-assigning a number to the input signal of `Num2Bits` both converts that number into an array of
+bits *AND* asserts the constraints of that circuit, such as the fact that this number is fully-expressible by the given
+number of bits `b`.
 
 
 ## Question 3
@@ -35,4 +42,6 @@ Suppose you're reading a `circom` program and you see the following:
 Explain why this is invalid.
 
 ## Answer 3
+Constraints are only valid for `R1C`'s (i.e. quadratic expressions). The bitwise-and operator on the left-hand side of 
+the last line is not a quadratic expression. 
 
