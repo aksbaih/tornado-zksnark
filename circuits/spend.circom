@@ -38,6 +38,21 @@ template SelectiveSwitch() {
     signal output out1;
 
     // TODO
+    // first, define ifthenelse as a componenet
+    component ifthenelse[] = [IfThenElse(), IfThenElse()];
+    
+    // now use the components to switch conditionally
+    // first output 
+    ifthenelse[0].condition <== s;
+    ifthenelse[0].true_value <== in1;
+    ifthenelse[0].false_value <== in0;
+    out0 <== ifthenelse[0].out;
+    
+    // second output
+    ifthenelse[1].condition <== s;
+    ifthenelse[1].true_value <== in0;
+    ifthenelse[1].false_value <== in1;
+    out1 <== ifthenelse[1].out;
 }
 
 /*
