@@ -15,6 +15,12 @@ template IfThenElse() {
 
     // TODO
     // Hint: You will need a helper signal...
+    
+    // first, verify that the condition is indeed 0 or 1
+    (condition) * (1 - condition) === 0;
+
+    // assign the output to be a linear combination of the two quadratic forms
+    out <== (condition) * true_value + (1 - condition) * false_value;
 }
 
 /*
