@@ -20,7 +20,11 @@ template IfThenElse() {
     (condition) * (1 - condition) === 0;
 
     // assign the output to be a linear combination of the two quadratic forms
-    out <== (condition) * true_value + (1 - condition) * false_value;
+    signal true_side;
+    signal false_side;
+    true_side <== (condition) * true_value;
+    false_side <== (1 - condition) * false_value;
+    out <== true_side + false_side;
 }
 
 /*
@@ -39,20 +43,21 @@ template SelectiveSwitch() {
 
     // TODO
     // first, define ifthenelse as a componenet
-    component ifthenelse[] = [IfThenElse(), IfThenElse()];
+    component ifthenelse0 = IfThenElse();
+    component ifthenelse1 = IfThenElse();
     
     // now use the components to switch conditionally
     // first output 
-    ifthenelse[0].condition <== s;
-    ifthenelse[0].true_value <== in1;
-    ifthenelse[0].false_value <== in0;
-    out0 <== ifthenelse[0].out;
+    ifthenelse0.condition <== s;
+    ifthenelse0.true_value <== in1;
+    ifthenelse0.false_value <== in0;
+    out0 <== ifthenelse0.out;
     
     // second output
-    ifthenelse[1].condition <== s;
-    ifthenelse[1].true_value <== in0;
-    ifthenelse[1].false_value <== in1;
-    out1 <== ifthenelse[1].out;
+    ifthenelse1.condition <== s;
+    ifthenelse1.true_value <== in0;
+    ifthenelse1.false_value <== in1;
+    out1 <== ifthenelse1.out;
 }
 
 /*
@@ -78,3 +83,4 @@ template Spend(depth) {
 
     // TODO
 }
+component main = SelectiveSwitch();
