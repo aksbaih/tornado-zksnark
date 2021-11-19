@@ -11,11 +11,11 @@
   "author": "aozdemir",
   "license": "GPL-3.0",
   "dependencies": {
-    "docopt": "^0.6.2",
-    "circom": "alex-ozdemir/circom#cs251",
-    "snarkjs": "^0.1.11",
-    "mocha": "^5.2.0",
+    "big-integer": "^1.6.47",
     "chai": "^4.1.0",
-    "big-integer": "^1.6.47"
+    "circom": "alex-ozdemir/circom#cs251",
+    "docopt": "^0.6.2",
+    "mocha": "^5.2.0",
+    "snarkjs": "^0.1.11"
   }
 }
