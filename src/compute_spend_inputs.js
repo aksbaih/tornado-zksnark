@@ -75,7 +75,27 @@ Arguments:
  */
 function computeInput(depth, transcript, nullifier) {
     // TODO
-    return {};
+    // define a tree
+    var sparse_merkle_tree = new SparseMerkleTree(depth);
+    // insert all existing coins, tracking the coin specified by `nullifier`
+    var wanted_coin_and_nonce = null;
+    for(var i = 0; i < transcript.length; i++) {
+        const coin = ((transcript[i].length === 2) ? mimc2(transcript[i][0], transcript[i][1]) : transcript[i]);
+        sparse_merkle_tree.insert(coin);
+        if(transcript[i][0] === nullifier) wanted_coin_and_nonce = [coin, transcript[i][1]];
+    }
+    // construct the proof
+    const merkle_proof = sparse_merkle_tree.path(wanted_coin_and_nonce[0]);
+    var snark_input = {
+        "digest": sparse_merkle_tree.digest,
+        "nullifier": nullifier,
+        "nonce": wanted_coin_and_nonce[1],
+    };
+    for(var i = 0; i < depth; i++) {
+        snark_input["sibling[" + i + "]"] = merkle_proof[i][0];
+        snark_input["direction[" + i + "]"] = merkle_proof[i][1] ? "1" : "0";
+    }
+    return snark_input;
 }
 
 module.exports = { computeInput };
