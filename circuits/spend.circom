@@ -132,4 +132,4 @@ template Spend(depth) {
     // assert that the resulting Merkle root matches the digest
     merkle_process.out === digest;
 }
-component main = Spend(3);
+
