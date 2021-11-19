@@ -60,6 +60,42 @@ template SelectiveSwitch() {
     out1 <== ifthenelse1.out;
 }
 
+/* This helper function runs the Merkle tree hash process for a given leaf_hash
+ * and list of siblings and directions. The out signal will store the resulting 
+ * Merkle root given the input signals.
+ */
+template MerkleProcess(depth) {
+    signal input leaf_hash;
+    signal input sibling[depth];
+    signal input direction[depth];
+    signal output out;
+
+    // define a list of hash circuit for each layer of the Merkle tree
+    component selective_switch[depth];
+    component H[depth];
+    signal hashes[depth + 1];
+    hashes[0] <== leaf_hash;
+
+    // iterate over the depth of the Merkle tree to assert the provided proof
+    for(var i = 0; i < depth; ++i) {
+        // create the necessary switch and hash circuits for this layer
+        selective_switch[i] = SelectiveSwitch();
+        H[i] = Mimc2();
+        // setup the switch circuit which depends on direction[i]
+        selective_switch[i].s <== direction[i];
+        selective_switch[i].in0 <== hashes[i];
+        selective_switch[i].in1 <== sibling[i];
+	// setup the hash function in the order produced by the switch circuit
+        H[i].in0 <== selective_switch[i].out0;
+        H[i].in1 <== selective_switch[i].out1;
+        // store the hash value in the list of hashes
+        hashes[i + 1] <== H[i].out;
+    }
+
+    // store the final hash as the result of the merkle process
+    out <== hashes[depth];
+}
+
 /*
  * Verifies the presence of H(`nullifier`, `nonce`) in the tree of depth
  * `depth`, summarized by `digest`.
@@ -82,5 +118,18 @@ template Spend(depth) {
     signal private input direction[depth];
 
     // TODO
+    // define a hash ciruit used to hash the leaf
+    component H = Mimc2();
+    H.in0 <== nullifier;
+    H.in1 <== nonce;
+    // define a MerkleProcess ciruit used to evaluate the provided proof
+    component merkle_process = MerkleProcess(depth);
+    merkle_process.leaf_hash <== H.out;
+    for(var i = 0; i < depth; ++i) {
+        merkle_process.sibling[i] <== sibling[i];
+        merkle_process.direction[i] <== direction[i];
+    }
+    // assert that the resulting Merkle root matches the digest
+    merkle_process.out === digest;
 }
-component main = SelectiveSwitch();
+component main = Spend(3);
